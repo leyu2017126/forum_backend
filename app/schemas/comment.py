@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from .user import UserOut
@@ -7,8 +9,12 @@ class CommentBase(BaseModel):
     content: str
 
 
-class CommentCreate(CommentBase):
-    pass
+class CommentCreate(BaseModel):
+    content: str
+    parent_id: Optional[int] = None  # 添加 parent_id 属性，允许为空
+
+    class Config:
+        orm_mode = True  # 如果你使用 ORM 映射（如 SQLAlchemy）
 
 
 class CommentUpdate(CommentBase):

@@ -20,20 +20,19 @@ router = APIRouter(tags=["Comments"])
              response_model=CommentOut,
              status_code=status.HTTP_201_CREATED,
              summary="Create a new comment",
-             responses={
-                 404: {"description": "Post or parent comment not found"},
-                 403: {"description": "Not authorized"}
-             })
+             responses={404: {"description": "Post or parent comment not found"},
+                        403: {"description": "Not authorized"}})
 async def create_comment(
         post_id: int,
-        comment: CommentCreate,
+        comment: CommentCreate,  # CommentCreate 现在包含 parent_id
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
     """Create a new comment (supports nested comments)"""
     service = CommentService(db, current_user)
-    new_comment = service.create_comment(post_id, comment.content, comment.parent_id)
+    new_comment = service.create_comment(post_id, comment.content, comment.parent_id)  # 使用 parent_id
     return new_comment
+
 
 
 @router.get("/posts/{post_id}/comments",
